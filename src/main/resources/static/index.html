@@ -1,0 +1,3228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SmartGate | VisitorPass</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(0, 229, 255, 0.15),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(124, 77, 255, 0.18),
+                    transparent 30%
+                ),
+
+                #070a12;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================
+           ANIMATED BACKGROUND
+        ========================= */
+
+        .orb {
+
+            position: fixed;
+
+            width: 250px;
+            height: 250px;
+
+            border-radius: 50%;
+
+            filter: blur(80px);
+
+            opacity: 0.18;
+
+            pointer-events: none;
+
+            animation: floatOrb 8s ease-in-out infinite;
+
+            z-index: -1;
+        }
+
+        .orb.one {
+
+            background: #00e5ff;
+
+            top: 10%;
+            left: 20%;
+        }
+
+        .orb.two {
+
+            background: #7c4dff;
+
+            bottom: 10%;
+            right: 15%;
+
+            animation-delay: 3s;
+        }
+
+        @keyframes floatOrb {
+
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(40px, -30px);
+            }
+        }
+
+
+        /* =========================
+           APP
+        ========================= */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+
+            width: 255px;
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            height: 100vh;
+
+            padding: 25px 18px;
+
+            background: rgba(10, 15, 28, 0.90);
+
+            backdrop-filter: blur(25px);
+
+            border-right:
+                1px solid rgba(255,255,255,0.08);
+
+            z-index: 10;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 45px;
+        }
+
+
+        .logo-icon {
+
+            width: 46px;
+            height: 46px;
+
+            border-radius: 14px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00e5ff,
+                    #7c4dff
+                );
+
+            font-size: 22px;
+
+            box-shadow:
+                0 0 25px
+                rgba(0,229,255,0.3);
+
+            animation: logoPulse 3s infinite;
+        }
+
+        @keyframes logoPulse {
+
+            0%, 100% {
+                box-shadow:
+                    0 0 20px
+                    rgba(0,229,255,0.2);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 35px
+                    rgba(124,77,255,0.5);
+            }
+        }
+
+
+        .logo h2 {
+            font-size: 20px;
+        }
+
+        .logo span {
+            color: #00e5ff;
+        }
+
+
+        .menu {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+
+        .menu button {
+
+            border: none;
+
+            background: transparent;
+
+            color: #9ca8bf;
+
+            padding: 14px;
+
+            border-radius: 13px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            transition: 0.3s;
+        }
+
+
+        .menu button:hover,
+        .menu button.active {
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0,229,255,0.13),
+                    rgba(124,77,255,0.10)
+                );
+
+            transform: translateX(5px);
+        }
+
+
+        .menu-icon {
+            margin-right: 10px;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+
+            margin-left: 255px;
+
+            width: calc(100% - 255px);
+
+            padding: 32px;
+        }
+
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .topbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 30px;
+        }
+
+
+        .welcome h1 {
+
+            font-size: 30px;
+
+            margin-bottom: 6px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    white,
+                    #8befff
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .welcome p {
+            color: #7f8ba3;
+        }
+
+
+        .profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .avatar {
+
+            width: 46px;
+            height: 46px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-weight: bold;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00e5ff,
+                    #7c4dff
+                );
+        }
+
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .page-section {
+
+            display: none;
+
+            animation: pageEnter 0.5s ease;
+        }
+
+
+        .page-section.active {
+            display: block;
+        }
+
+
+        @keyframes pageEnter {
+
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .stat-card {
+
+            padding: 21px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(255,255,255,0.055);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            backdrop-filter: blur(20px);
+
+            transition: 0.3s;
+        }
+
+
+        .stat-card:hover {
+
+            transform:
+                translateY(-6px);
+
+            border-color:
+                rgba(0,229,255,0.35);
+        }
+
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+
+        .stat-card p {
+
+            color: #8793aa;
+
+            font-size: 13px;
+        }
+
+
+        .stat-card h2 {
+
+            font-size: 28px;
+
+            margin-top: 7px;
+        }
+
+
+        /* =========================
+           GLASS CARD
+        ========================= */
+
+        .card {
+
+            padding: 25px;
+
+            border-radius: 22px;
+
+            background:
+                rgba(255,255,255,0.055);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.09);
+
+            backdrop-filter: blur(22px);
+
+            box-shadow:
+                0 20px 60px
+                rgba(0,0,0,0.18);
+
+            margin-bottom: 22px;
+        }
+
+
+        .card-title {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 20px;
+        }
+
+
+        .card-title h2 {
+            font-size: 20px;
+        }
+
+
+        .subtitle {
+            color: #7f8ba3;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 15px;
+        }
+
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+
+        label {
+
+            display: block;
+
+            color: #aab4c8;
+
+            font-size: 13px;
+
+            margin-bottom: 7px;
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border-radius: 11px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            background:
+                rgba(0,0,0,0.25);
+
+            color: white;
+
+            outline: none;
+
+            transition: 0.3s;
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color: #00e5ff;
+
+            box-shadow:
+                0 0 15px
+                rgba(0,229,255,0.10);
+        }
+
+
+        select option {
+            background: #111827;
+            color: white;
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .primary {
+
+            border: none;
+
+            padding: 14px 20px;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00d9ff,
+                    #6950ff
+                );
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+            width: 100%;
+        }
+
+
+        .primary:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 30px
+                rgba(0,229,255,0.20);
+        }
+
+
+        .danger {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff4b5c,
+                    #b91c45
+                );
+        }
+
+
+        /* =========================
+           PASS CARD
+        ========================= */
+
+        .pass-wrapper {
+
+            display: flex;
+
+            justify-content: center;
+
+            perspective: 1000px;
+        }
+
+
+        .pass-card {
+
+            width: 100%;
+
+            max-width: 570px;
+
+            padding: 28px;
+
+            border-radius: 25px;
+
+            position: relative;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(0,229,255,0.12),
+                    rgba(124,77,255,0.13)
+                );
+
+            border:
+                1px solid
+                rgba(255,255,255,0.14);
+
+            box-shadow:
+                0 25px 70px
+                rgba(0,0,0,0.30);
+
+            animation:
+                passAppear 0.8s ease;
+        }
+
+
+        @keyframes passAppear {
+
+            from {
+                opacity: 0;
+                transform:
+                    rotateX(10deg)
+                    translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    rotateX(0)
+                    translateY(0);
+            }
+        }
+
+
+        .pass-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            border-radius: 50%;
+
+            background: #00e5ff;
+
+            opacity: 0.07;
+
+            right: -70px;
+            top: -70px;
+        }
+
+
+        .pass-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding-bottom: 18px;
+
+            border-bottom:
+                1px dashed
+                rgba(255,255,255,0.15);
+        }
+
+
+        .pass-brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .mini-shield {
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00e5ff,
+                    #7c4dff
+                );
+        }
+
+
+        .approved {
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            color: #00ff9d;
+
+            background:
+                rgba(0,255,157,0.10);
+
+            border:
+                1px solid
+                rgba(0,255,157,0.15);
+        }
+
+
+        .visitor-info {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 15px;
+
+            padding: 20px 0;
+        }
+
+
+        .info-box {
+
+            padding: 13px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(0,0,0,0.15);
+        }
+
+
+        .info-box small {
+
+            display: block;
+
+            color: #7f8ba3;
+
+            font-size: 11px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .info-box strong {
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           OTP
+        ========================= */
+
+        .otp-section {
+
+            text-align: center;
+
+            padding: 20px;
+
+            border-radius: 17px;
+
+            background:
+                rgba(0,0,0,0.18);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.07);
+        }
+
+
+        .otp-label {
+
+            color: #7f8ba3;
+
+            font-size: 12px;
+        }
+
+
+        .otp-number {
+
+            font-size: 42px;
+
+            letter-spacing: 9px;
+
+            margin: 10px 0;
+
+            color: #00e5ff;
+
+            font-weight: 800;
+
+            text-shadow:
+                0 0 20px
+                rgba(0,229,255,0.45);
+        }
+
+
+        .countdown {
+
+            color: #ffcf5c;
+
+            font-size: 13px;
+        }
+
+
+        .countdown.expired {
+            color: #ff5f6d;
+        }
+
+
+        /* =========================
+           SECURITY
+        ========================= */
+
+        .security-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+        }
+
+
+        .security-icon {
+
+            width: 75px;
+            height: 75px;
+
+            margin: 5px auto 18px;
+
+            border-radius: 22px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 32px;
+
+            background:
+                rgba(0,229,255,0.09);
+
+            border:
+                1px solid
+                rgba(0,229,255,0.18);
+
+            animation: shieldPulse 2.5s infinite;
+        }
+
+
+        @keyframes shieldPulse {
+
+            0%, 100% {
+                box-shadow:
+                    0 0 0
+                    rgba(0,229,255,0);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 25px
+                    rgba(0,229,255,0.20);
+            }
+        }
+
+
+        .security-center {
+            text-align: center;
+        }
+
+
+        /* =========================
+           HISTORY
+        ========================= */
+
+        .visitor {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(255,255,255,0.035);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.05);
+
+            transition: 0.3s;
+        }
+
+
+        .visitor:hover {
+
+            transform: translateX(4px);
+
+            background:
+                rgba(255,255,255,0.06);
+        }
+
+
+        .visitor-name {
+            font-weight: 600;
+        }
+
+
+        .visitor-purpose {
+
+            color: #7f8ba3;
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+
+        .badge {
+
+            padding: 6px 11px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: bold;
+        }
+
+
+        .badge.approved {
+
+            color: #00ff9d;
+
+            background:
+                rgba(0,255,157,0.09);
+        }
+
+
+        .badge.revoked {
+
+            color: #ff6575;
+
+            background:
+                rgba(255,80,100,0.09);
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+
+            display: none;
+
+            padding: 12px;
+
+            margin-top: 15px;
+
+            border-radius: 11px;
+
+            font-size: 13px;
+        }
+
+
+        .success {
+
+            display: block;
+
+            color: #00ff9d;
+
+            background:
+                rgba(0,255,157,0.09);
+
+            border:
+                1px solid
+                rgba(0,255,157,0.10);
+        }
+
+
+        .error {
+
+            display: block;
+
+            color: #ff6575;
+
+            background:
+                rgba(255,80,100,0.09);
+
+            border:
+                1px solid
+                rgba(255,80,100,0.10);
+        }
+
+
+        /* =========================
+           EMPTY PASS
+        ========================= */
+
+        .empty-pass {
+
+            text-align: center;
+
+            padding: 45px 20px;
+
+            color: #7f8ba3;
+        }
+
+
+        .empty-pass-icon {
+
+            font-size: 50px;
+
+            margin-bottom: 15px;
+
+            opacity: 0.7;
+        }
+
+
+        /* =========================
+           SECURITY HEADER
+        ========================= */
+
+        .security-header {
+
+            text-align: center;
+
+            margin-bottom: 25px;
+        }
+
+
+        .security-header h1 {
+
+            font-size: 28px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .security-header p {
+            color: #7f8ba3;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width: 1050px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .security-grid {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        @media(max-width: 750px) {
+
+            .sidebar {
+
+                width: 72px;
+
+                padding:
+                    20px 9px;
+            }
+
+
+            .logo {
+
+                justify-content: center;
+            }
+
+
+            .logo h2 {
+                display: none;
+            }
+
+
+            .menu button {
+
+                text-align: center;
+            }
+
+
+            .menu button span {
+                display: none;
+            }
+
+
+            .menu-icon {
+                margin: 0;
+            }
+
+
+            .main {
+
+                margin-left: 72px;
+
+                width:
+                    calc(100% - 72px);
+
+                padding: 18px;
+            }
+
+
+            .topbar {
+
+                align-items: flex-start;
+            }
+
+
+            .profile div:first-child {
+                display: none;
+            }
+
+
+            .stats {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .visitor-info {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .otp-number {
+
+                font-size: 31px;
+
+                letter-spacing: 5px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="orb one"></div>
+<div class="orb two"></div>
+
+
+<div class="app">
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🛡️
+            </div>
+
+            <h2>
+                Smart<span>Gate</span>
+            </h2>
+
+        </div>
+
+
+        <div class="menu">
+
+            <button
+                class="active"
+                onclick="showSection('residentSection', this)">
+
+                <span class="menu-icon">🏠</span>
+                <span>Resident</span>
+
+            </button>
+
+
+            <button
+                onclick="showSection('passSection', this)">
+
+                <span class="menu-icon">🎫</span>
+                <span>Visitor Pass</span>
+
+            </button>
+
+
+            <button
+                onclick="showSection('securitySection', this)">
+
+                <span class="menu-icon">🛡️</span>
+                <span>Security Gate</span>
+
+            </button>
+
+
+            <button
+                onclick="showSection('historySection', this)">
+
+                <span class="menu-icon">📋</span>
+                <span>History</span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div class="welcome">
+
+                <h1 id="pageTitle">
+                    Resident Dashboard 👋
+                </h1>
+
+                <p id="pageSubtitle">
+                    Manage your visitors securely.
+                </p>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div>
+
+                    <b>Nandhini</b>
+
+                    <br>
+
+                    <small style="color:#7f8ba3;">
+                        Resident • A-101
+                    </small>
+
+                </div>
+
+
+                <div class="avatar">
+                    N
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             RESIDENT SECTION
+        ====================================================== -->
+
+        <section
+            id="residentSection"
+            class="page-section active">
+
+
+            <!-- STATS -->
+
+            <div class="stats">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        👥
+                    </div>
+
+                    <p>Total Visitors</p>
+
+                    <h2 id="visitorCount">
+                        0
+                    </h2>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ✅
+                    </div>
+
+                    <p>Approved</p>
+
+                    <h2 id="approvedCount">
+                        0
+                    </h2>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🔐
+                    </div>
+
+                    <p>Active OTP</p>
+
+                    <h2 id="otpCount">
+                        0
+                    </h2>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🏠
+                    </div>
+
+                    <p>Your Flat</p>
+
+                    <h2>
+                        A-101
+                    </h2>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- INVITE VISITOR -->
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <div>
+
+                        <h2>
+                            👤 Invite a Visitor
+                        </h2>
+
+                        <p class="subtitle">
+                            Create a secure visitor pre-approval.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Visitor Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="visitorName"
+                            placeholder="Enter visitor name">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="visitorPhone"
+                            placeholder="Enter phone number">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Purpose
+                        </label>
+
+                        <select id="purpose">
+
+                            <option value="">
+                                Select purpose
+                            </option>
+
+                            <option>
+                                Meeting
+                            </option>
+
+                            <option>
+                                Delivery
+                            </option>
+
+                            <option>
+                                Friend
+                            </option>
+
+                            <option>
+                                Family
+                            </option>
+
+                            <option>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Expected Start
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="expectedStart">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Expected End
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="expectedEnd">
+
+                    </div>
+
+
+                    <div class="form-group"
+                         style="
+                         display:flex;
+                         align-items:end;">
+
+                        <button
+                            class="primary"
+                            onclick="createApproval()">
+
+                            Create Visitor Pass 🚀
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="approvalStatus"
+                    class="status">
+                </div>
+
+            </div>
+
+
+
+            <!-- QUICK INFO -->
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        ⚡ Quick Security Info
+                    </h2>
+
+                </div>
+
+
+                <div class="visitor">
+
+                    <div>
+
+                        <div class="visitor-name">
+                            OTP Protection
+                        </div>
+
+                        <div class="visitor-purpose">
+                            Every visitor receives a unique 6-digit OTP.
+                        </div>
+
+                    </div>
+
+                    <span class="badge approved">
+                        ACTIVE
+                    </span>
+
+                </div>
+
+
+                <div class="visitor">
+
+                    <div>
+
+                        <div class="visitor-name">
+                            Entry Validation
+                        </div>
+
+                        <div class="visitor-purpose">
+                            Used, expired and revoked OTPs are blocked.
+                        </div>
+
+                    </div>
+
+                    <span class="badge approved">
+                        SECURE
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             VISITOR PASS SECTION
+        ====================================================== -->
+
+        <section
+            id="passSection"
+            class="page-section">
+
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <div>
+
+                        <h2>
+                            🎫 Digital Visitor Pass
+                        </h2>
+
+                        <p class="subtitle">
+                            Your latest approved visitor pass.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="passContainer">
+
+                    <div class="empty-pass">
+
+                        <div class="empty-pass-icon">
+                            🎫
+                        </div>
+
+                        <p>
+                            Create a visitor approval to generate a pass.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             SECURITY SECTION
+        ====================================================== -->
+
+        <section
+            id="securitySection"
+            class="page-section">
+
+
+            <div class="security-header">
+
+                <h1>
+                    🛡️ Security Gate
+                </h1>
+
+                <p>
+                    Verify visitor entry using their secure OTP.
+                </p>
+
+            </div>
+
+
+            <div class="security-grid">
+
+
+                <!-- OTP GENERATOR -->
+
+                <div class="card security-center">
+
+                    <div class="security-icon">
+                        🔐
+                    </div>
+
+                    <h2>
+                        Generate Visitor OTP
+                    </h2>
+
+                    <p class="subtitle"
+                       style="margin:10px 0 20px;">
+
+                        Generate an OTP for the latest approval.
+
+                    </p>
+
+
+                    <button
+                        class="primary"
+                        onclick="generateOTP()">
+
+                        Generate Secure OTP
+
+                    </button>
+
+
+                    <div
+                        id="otpStatus"
+                        class="status">
+                    </div>
+
+                </div>
+
+
+
+                <!-- VERIFY -->
+
+                <div class="card security-center">
+
+                    <div class="security-icon">
+                        🚪
+                    </div>
+
+                    <h2>
+                        Verify Entry
+                    </h2>
+
+                    <p class="subtitle"
+                       style="margin:10px 0 20px;">
+
+                        Enter the visitor's 6-digit OTP.
+
+                    </p>
+
+
+                    <input
+                        type="text"
+                        id="verifyOTP"
+                        maxlength="6"
+                        placeholder="Enter OTP"
+                        style="
+                        text-align:center;
+                        font-size:20px;
+                        letter-spacing:5px;
+                        margin-bottom:12px;">
+
+
+                    <button
+                        class="primary"
+                        onclick="verifyOTP()">
+
+                        Verify Visitor Entry
+
+                    </button>
+
+
+                    <div
+                        id="verifyStatus"
+                        class="status">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             HISTORY SECTION
+        ====================================================== -->
+
+        <section
+            id="historySection"
+            class="page-section">
+
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <div>
+
+                        <h2>
+                            📋 Visitor History
+                        </h2>
+
+                        <p class="subtitle">
+                            All visitor approval activity.
+                        </p>
+
+                    </div>
+
+                    <button
+                        onclick="loadApprovals()"
+                        style="
+                        border:none;
+                        padding:9px 13px;
+                        border-radius:9px;
+                        background:rgba(0,229,255,0.1);
+                        color:#00e5ff;
+                        cursor:pointer;">
+
+                        🔄 Refresh
+
+                    </button>
+
+                </div>
+
+
+                <div id="visitorList">
+
+                    <p class="subtitle">
+                        Loading visitor activity...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+
+/* ============================================================
+   CONFIGURATION
+============================================================ */
+
+const API = "http://localhost:8080";
+
+let currentApprovalId = null;
+
+let currentVisitor = null;
+
+let countdownInterval = null;
+
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function showSection(sectionId, button) {
+
+    document
+        .querySelectorAll(".page-section")
+        .forEach(section => {
+
+            section.classList.remove("active");
+
+        });
+
+
+    document
+        .getElementById(sectionId)
+        .classList.add("active");
+
+
+    document
+        .querySelectorAll(".menu button")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+    button.classList.add("active");
+
+
+    const titles = {
+
+        residentSection: [
+            "Resident Dashboard 👋",
+            "Manage your visitors securely."
+        ],
+
+        passSection: [
+            "Digital Visitor Pass 🎫",
+            "Your secure visitor credentials."
+        ],
+
+        securitySection: [
+            "Security Gate 🛡️",
+            "Verify visitors before entry."
+        ],
+
+        historySection: [
+            "Visitor History 📋",
+            "Track visitor activity."
+        ]
+
+    };
+
+
+    document.getElementById(
+        "pageTitle"
+    ).innerText =
+        titles[sectionId][0];
+
+
+    document.getElementById(
+        "pageSubtitle"
+    ).innerText =
+        titles[sectionId][1];
+
+}
+
+
+
+/* ============================================================
+   CREATE APPROVAL
+============================================================ */
+
+async function createApproval() {
+
+
+    const name =
+        document.getElementById(
+            "visitorName"
+        ).value.trim();
+
+
+    const phone =
+        document.getElementById(
+            "visitorPhone"
+        ).value.trim();
+
+
+    const purpose =
+        document.getElementById(
+            "purpose"
+        ).value;
+
+
+    const start =
+        document.getElementById(
+            "expectedStart"
+        ).value;
+
+
+    const end =
+        document.getElementById(
+            "expectedEnd"
+        ).value;
+
+
+
+    if (
+        !name ||
+        !phone ||
+        !purpose ||
+        !start ||
+        !end
+    ) {
+
+        showStatus(
+            "approvalStatus",
+            "Please fill all fields including date and time.",
+            false
+        );
+
+        return;
+    }
+
+
+
+    if (new Date(end) <= new Date(start)) {
+
+        showStatus(
+            "approvalStatus",
+            "Expected end time must be after start time.",
+            false
+        );
+
+        return;
+    }
+
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API + "/api/approvals",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            visitorName:
+                                name,
+
+                            visitorPhone:
+                                phone,
+
+                            purpose:
+                                purpose,
+
+                            expectedStart:
+                                start + ":00",
+
+                            expectedEnd:
+                                end + ":00",
+
+                            resident: {
+
+                                id: 1
+
+                            }
+
+                        })
+
+                }
+            );
+
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+
+        const data =
+            await response.json();
+
+
+
+        currentApprovalId =
+            data.id;
+
+
+
+        currentVisitor = {
+
+            id: data.id,
+
+            name:
+                data.visitorName,
+
+            phone:
+                data.visitorPhone,
+
+            purpose:
+                data.purpose,
+
+            start:
+                data.expectedStart,
+
+            end:
+                data.expectedEnd,
+
+            status:
+                data.status,
+
+            otp:
+                null,
+
+            expiresAt:
+                null
+
+        };
+
+
+
+        showStatus(
+            "approvalStatus",
+            "Visitor pass created successfully! Approval ID: "
+            + data.id,
+            true
+        );
+
+
+
+        createPassCard();
+
+
+
+        document.getElementById(
+            "visitorName"
+        ).value = "";
+
+
+        document.getElementById(
+            "visitorPhone"
+        ).value = "";
+
+
+        document.getElementById(
+            "purpose"
+        ).value = "";
+
+
+        document.getElementById(
+            "expectedStart"
+        ).value = "";
+
+
+        document.getElementById(
+            "expectedEnd"
+        ).value = "";
+
+
+
+        await loadApprovals();
+
+
+
+        setTimeout(() => {
+
+            document
+                .querySelector(
+                    '[onclick*="passSection"]'
+                )
+                .click();
+
+        }, 700);
+
+
+    }
+
+    catch(error) {
+
+        showStatus(
+            "approvalStatus",
+            "Error: " + error.message,
+            false
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   CREATE PASS CARD
+============================================================ */
+
+function createPassCard() {
+
+
+    if (!currentVisitor) {
+        return;
+    }
+
+
+    document.getElementById(
+        "passContainer"
+    ).innerHTML = `
+
+        <div class="pass-wrapper">
+
+            <div class="pass-card">
+
+                <div class="pass-header">
+
+                    <div class="pass-brand">
+
+                        <div class="mini-shield">
+                            🛡️
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                SMARTGATE
+                            </strong>
+
+                            <br>
+
+                            <small
+                                style="color:#7f8ba3;">
+                                VISITOR PASS
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="approved">
+                        ${currentVisitor.status}
+                    </span>
+
+                </div>
+
+
+
+                <div class="visitor-info">
+
+
+                    <div class="info-box">
+
+                        <small>
+                            VISITOR
+                        </small>
+
+                        <strong>
+                            ${escapeHTML(
+                                currentVisitor.name
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <small>
+                            PHONE
+                        </small>
+
+                        <strong>
+                            ${escapeHTML(
+                                currentVisitor.phone
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <small>
+                            PURPOSE
+                        </small>
+
+                        <strong>
+                            ${escapeHTML(
+                                currentVisitor.purpose
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <small>
+                            FLAT
+                        </small>
+
+                        <strong>
+                            A-101
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <small>
+                            EXPECTED START
+                        </small>
+
+                        <strong>
+                            ${formatDateTime(
+                                currentVisitor.start
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <small>
+                            EXPECTED END
+                        </small>
+
+                        <strong>
+                            ${formatDateTime(
+                                currentVisitor.end
+                            )}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="otp-section">
+
+                    <div class="otp-label">
+                        SECURE VISITOR OTP
+                    </div>
+
+
+                    <div
+                        id="passOTP"
+                        class="otp-number">
+
+                        ------
+
+                    </div>
+
+
+                    <div
+                        id="countdown"
+                        class="countdown">
+
+                        Generate OTP to activate countdown.
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    id="passActions"
+                    style="
+                    margin-top:15px;">
+
+                    <button
+                        class="primary"
+                        onclick="generateOTP()">
+
+                        🔐 Generate OTP
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* ============================================================
+   GENERATE OTP
+============================================================ */
+
+async function generateOTP() {
+
+
+    if (!currentApprovalId) {
+
+        showStatus(
+            "otpStatus",
+            "Create a visitor approval first.",
+            false
+        );
+
+        return;
+    }
+
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API +
+                "/api/otp/generate/" +
+                currentApprovalId,
+                {
+
+                    method: "POST"
+
+                }
+            );
+
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                await response.text()
+            );
+
+        }
+
+
+
+        const data =
+            await response.json();
+
+
+
+        currentVisitor.otp =
+            data.otpCode;
+
+
+        currentVisitor.expiresAt =
+            data.expiresAt;
+
+
+
+        const otpElement =
+            document.getElementById(
+                "passOTP"
+            );
+
+
+        if (otpElement) {
+
+            otpElement.innerText =
+                data.otpCode;
+
+        }
+
+
+
+        const passActions =
+            document.getElementById(
+                "passActions"
+            );
+
+
+        if (passActions) {
+
+            passActions.innerHTML = `
+
+                <button
+                    class="primary danger"
+                    onclick="revokeApproval()">
+
+                    ❌ Revoke Visitor Approval
+
+                </button>
+
+            `;
+
+        }
+
+
+
+        startCountdown(
+            data.expiresAt
+        );
+
+
+
+        showStatus(
+            "otpStatus",
+            "OTP generated successfully.",
+            true
+        );
+
+
+
+        updateOTPCount(1);
+
+
+        showSectionDirect(
+            "passSection"
+        );
+
+    }
+
+    catch(error) {
+
+        showStatus(
+            "otpStatus",
+            "Error: " + error.message,
+            false
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   COUNTDOWN
+============================================================ */
+
+function startCountdown(expiresAt) {
+
+
+    clearInterval(
+        countdownInterval
+    );
+
+
+    const countdown =
+        document.getElementById(
+            "countdown"
+        );
+
+
+    if (!countdown) {
+        return;
+    }
+
+
+
+    function update() {
+
+
+        const remaining =
+            new Date(expiresAt).getTime()
+            -
+            new Date().getTime();
+
+
+
+        if (remaining <= 0) {
+
+            countdown.innerText =
+                "⛔ OTP EXPIRED";
+
+            countdown.classList.add(
+                "expired"
+            );
+
+            clearInterval(
+                countdownInterval
+            );
+
+            return;
+
+        }
+
+
+
+        const minutes =
+            Math.floor(
+                remaining / 60000
+            );
+
+
+        const seconds =
+            Math.floor(
+                (remaining % 60000) / 1000
+            );
+
+
+        countdown.innerText =
+            "⏳ Valid for "
+            +
+            String(minutes).padStart(2,"0")
+            +
+            ":"
+            +
+            String(seconds).padStart(2,"0");
+
+    }
+
+
+    update();
+
+
+    countdownInterval =
+        setInterval(
+            update,
+            1000
+        );
+
+}
+
+
+
+/* ============================================================
+   VERIFY OTP
+============================================================ */
+
+async function verifyOTP() {
+
+
+    const otp =
+        document.getElementById(
+            "verifyOTP"
+        ).value.trim();
+
+
+
+    if (!otp) {
+
+        showStatus(
+            "verifyStatus",
+            "Enter a visitor OTP.",
+            false
+        );
+
+        return;
+    }
+
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API +
+                "/api/otp/verify?otpCode="
+                +
+                encodeURIComponent(otp),
+                {
+
+                    method: "POST"
+
+                }
+            );
+
+
+
+        const result =
+            await response.text();
+
+
+
+        if (
+            result ===
+            "Visitor entry approved"
+        ) {
+
+
+            showStatus(
+                "verifyStatus",
+                "✅ Visitor entry approved!",
+                true
+            );
+
+
+            document.getElementById(
+                "verifyOTP"
+            ).value = "";
+
+
+        }
+
+        else {
+
+            showStatus(
+                "verifyStatus",
+                result,
+                false
+            );
+
+        }
+
+    }
+
+    catch(error) {
+
+        showStatus(
+            "verifyStatus",
+            "Unable to connect to server.",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   REVOKE APPROVAL
+============================================================ */
+
+async function revokeApproval() {
+
+
+    if (!currentApprovalId) {
+        return;
+    }
+
+
+
+    const confirmRevoke =
+        confirm(
+            "Are you sure you want to revoke this visitor approval?"
+        );
+
+
+
+    if (!confirmRevoke) {
+        return;
+    }
+
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API +
+                "/api/approvals/"
+                +
+                currentApprovalId
+                +
+                "/revoke",
+                {
+
+                    method: "PUT"
+
+                }
+            );
+
+
+
+        const result =
+            await response.text();
+
+
+
+        if (!response.ok) {
+
+            throw new Error(result);
+
+        }
+
+
+
+        currentVisitor.status =
+            "REVOKED";
+
+
+
+        const passActions =
+            document.getElementById(
+                "passActions"
+            );
+
+
+        if (passActions) {
+
+            passActions.innerHTML = `
+
+                <div
+                    class="status error"
+                    style="display:block;">
+
+                    ❌ Visitor approval revoked.
+
+                </div>
+
+            `;
+
+        }
+
+
+
+        await loadApprovals();
+
+    }
+
+    catch(error) {
+
+        alert(
+            "Unable to revoke approval: "
+            +
+            error.message
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   LOAD APPROVALS
+============================================================ */
+
+async function loadApprovals() {
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API +
+                "/api/approvals"
+            );
+
+
+
+        if (!response.ok) {
+            throw new Error();
+        }
+
+
+
+        const approvals =
+            await response.json();
+
+
+
+        document.getElementById(
+            "visitorCount"
+        ).innerText =
+            approvals.length;
+
+
+
+        document.getElementById(
+            "approvedCount"
+        ).innerText =
+            approvals.filter(
+                a =>
+                    a.status ===
+                    "APPROVED"
+            ).length;
+
+
+
+        const list =
+            document.getElementById(
+                "visitorList"
+            );
+
+
+
+        if (!approvals.length) {
+
+            list.innerHTML = `
+
+                <div class="empty-pass">
+
+                    <div class="empty-pass-icon">
+                        👥
+                    </div>
+
+                    <p>
+                        No visitor activity yet.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+
+        list.innerHTML = "";
+
+
+
+        approvals
+            .slice()
+            .reverse()
+            .forEach(
+                approval => {
+
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    item.className =
+                        "visitor";
+
+
+
+                    const badgeClass =
+                        approval.status ===
+                        "APPROVED"
+                            ? "approved"
+                            : "revoked";
+
+
+
+                    item.innerHTML = `
+
+                        <div>
+
+                            <div
+                                class="visitor-name">
+
+                                ${escapeHTML(
+                                    approval.visitorName
+                                )}
+
+                            </div>
+
+                            <div
+                                class="visitor-purpose">
+
+                                ${escapeHTML(
+                                    approval.purpose
+                                )}
+                                •
+                                ${escapeHTML(
+                                    approval.visitorPhone
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        <span
+                            class="badge ${badgeClass}">
+
+                            ${approval.status}
+
+                        </span>
+
+                    `;
+
+
+
+                    list.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+    }
+
+    catch(error) {
+
+        document.getElementById(
+            "visitorList"
+        ).innerHTML = `
+
+            <p style="color:#ff6575;">
+                Unable to load visitor history.
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ============================================================
+   SHOW STATUS
+============================================================ */
+
+function showStatus(
+    elementId,
+    message,
+    success
+) {
+
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+
+    if (!element) {
+        return;
+    }
+
+
+
+    element.style.display =
+        "block";
+
+
+    element.innerText =
+        message;
+
+
+
+    element.className =
+        success
+            ? "status success"
+            : "status error";
+
+}
+
+
+
+/* ============================================================
+   DIRECT SECTION SWITCH
+============================================================ */
+
+function showSectionDirect(
+    sectionId
+) {
+
+
+    document
+        .querySelectorAll(
+            ".page-section"
+        )
+        .forEach(
+            section =>
+                section.classList.remove(
+                    "active"
+                )
+        );
+
+
+    document
+        .getElementById(
+            sectionId
+        )
+        .classList.add(
+            "active"
+        );
+
+
+    const titles = {
+
+        residentSection: [
+            "Resident Dashboard 👋",
+            "Manage your visitors securely."
+        ],
+
+        passSection: [
+            "Digital Visitor Pass 🎫",
+            "Your secure visitor credentials."
+        ],
+
+        securitySection: [
+            "Security Gate 🛡️",
+            "Verify visitors before entry."
+        ],
+
+        historySection: [
+            "Visitor History 📋",
+            "Track visitor activity."
+        ]
+
+    };
+
+
+    document.getElementById(
+        "pageTitle"
+    ).innerText =
+        titles[sectionId][0];
+
+
+    document.getElementById(
+        "pageSubtitle"
+    ).innerText =
+        titles[sectionId][1];
+
+}
+
+
+
+/* ============================================================
+   UPDATE OTP COUNT
+============================================================ */
+
+function updateOTPCount(value) {
+
+    document.getElementById(
+        "otpCount"
+    ).innerText = value;
+
+}
+
+
+
+/* ============================================================
+   FORMAT DATE
+============================================================ */
+
+function formatDateTime(
+    value
+) {
+
+
+    if (!value) {
+        return "-";
+    }
+
+
+
+    const date =
+        new Date(value);
+
+
+
+    if (isNaN(date.getTime())) {
+        return value;
+    }
+
+
+
+    return date.toLocaleString(
+        "en-IN",
+        {
+
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric",
+
+            hour: "2-digit",
+
+            minute: "2-digit"
+
+        }
+    );
+
+}
+
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHTML(
+    value
+) {
+
+
+    if (value === null ||
+        value === undefined) {
+
+        return "";
+
+    }
+
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* ============================================================
+   INITIAL LOAD
+============================================================ */
+
+loadApprovals();
+
+
+</script>
+
+
+</body>
+
+</html>
+
